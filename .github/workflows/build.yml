@@ -28,9 +28,6 @@ jobs:
           envkey_TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
           file_name: .env
 
-      - name: Build tarball
-        run: tar --exclude='./git' --exclude='./github' -czvf deploy.tar.gz .
-
       - name: Copy .deploy file to remote
         uses: appleboy/scp-action@master
         with:
@@ -38,7 +35,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          source: "deploy.tar.gz"
+          source: "."
           target: "~/"
 
       - name: SSH Deploy
