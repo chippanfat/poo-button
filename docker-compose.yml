@@ -20,6 +20,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
+      NODE_ENV: ${NODE_ENV}
       MQTT_USERNAME: ${MQTT_USERNAME}
       MQTT_PASSWORD: ${MQTT_PASSWORD}
       MQTT_URL: ${MQTT_URL}

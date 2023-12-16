@@ -1,0 +1,54 @@
+name: Node.js CI
+
+on:
+  push:
+    tags:
+      - v*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@main
+
+      - name: Show version number
+        run: echo "${{ steps.package-version.outputs.current-version }}"
+
+      - name: Make envfile
+        uses: SpicyPizza/create-envfile@v1.3
+        with:
+          envkey_NODE_ENV: production
+          envkey_MQTT_USERNAME: ${{ secrets.MQTT_USERNAME }}
+          envkey_MQTT_PASSWORD: ${{ secrets.MQTT_PASSWORD }}
+          envkey_MQTT_URL: ${{ secrets.MQTT_URL }}
+          envkey_TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          envkey_TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          file_name: .env
+
+      - name: Build tarball
+        run: tar -czvf deploy.tar.gz .
+
+      - name: Copy .env file to remote
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          source: "deploy.tar.gz"
+          target: "~/"
+
+      - name: SSH Deploy
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            tar -xvf deploy.tar.gz
+            docker-compose up -d
+            rm .env
