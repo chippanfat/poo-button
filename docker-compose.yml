@@ -25,7 +25,6 @@ services:
       MQTT_URL: ${MQTT_URL}
       TWILIO_ACCOUNT_SID: ${TWILIO_ACCOUNT_SID}
       TWILIO_AUTH_TOKEN: ${TWILIO_AUTH_TOKEN}
-
     networks:
       - smartbutton
 
