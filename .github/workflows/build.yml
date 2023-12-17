@@ -27,7 +27,21 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: ./packages/hub
+          context: .
           platforms: linux/amd64
           push: true
           tags: "ghcr.io/${{ github.repository_owner }}/poo-button/app:${{ steps.package-version.outputs.current-version }}"
+
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Draft Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.package-version.outputs.current-version }}
+          release_name: ${{ steps.package-version.outputs.current-version }}
+          draft: true
+          prerelease: false
