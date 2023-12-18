@@ -13,7 +13,7 @@ export class AppService {
       process.env.TWILIO_AUTH_TOKEN,
     );
 
-    for (const recipient in recipients) {
+    for (const recipient of recipients) {
       this.logger.log(`Sending to: ${recipient}`);
       await client.messages.create({
         body: 'Poppy is at the backdoor',
